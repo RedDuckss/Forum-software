@@ -41,6 +41,8 @@ $entries = Query("	SELECT
 					WHERE t.forum={0} AND p.deleted=0
 					ORDER BY p.date DESC LIMIT 5", $fid);
 
+$item_list = [];
+
 while($entry = Fetch($entries)) {
 	$tags = ParseThreadTags($entry['title']);
 
@@ -62,5 +64,16 @@ while($entry = Fetch($entries)) {
 	$text = str_replace(']]>', ']]&gt;', $text);
 
 	$username = htmlspecialchars($username);
+
+	$item = new \stdClass;
+
+	$item->title = "{$title} -- posted by {$username}";
+	$item->link = "{$entryurl}";
+	$item->pubDate = "{$rfcdate}";
+	$item->description = "{$text}";
+	$item->guid = "{$entryurl}";
+
+	array_push($item_list, $item);
 }
 
+echo json_encode($item_list);
